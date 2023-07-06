@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PastryHoldPoint : MonoBehaviour {
 
     [SerializeField] private ThrowableObjectsSOList throwableObjectsSOList;
 
-    GameObject pastry;
+    Pastry pastry;
 
 
     private void Start() {
@@ -14,26 +15,39 @@ public class PastryHoldPoint : MonoBehaviour {
     }
 
 
+
+
+    private void Update() {
+        KeepPastryInfront();
+
+    }
+
     public void SpawnPastry() {
-        if(pastry != null) {
+        if(HasPastry()) {
             Debug.LogError("Tried spawn Pastry - pastry != null");
             return;
         }
 
-        GameObject randomPastry = throwableObjectsSOList.GetRandomPastry();
+        Pastry randomPastry = throwableObjectsSOList.GetRandomPastry();
         pastry = Instantiate(randomPastry);
+        pastry.transform.position = this.transform.position;
 
-        Debug.LogError("Tried spawn Pastry - pasrty Spawned");
+        Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
+        pastryBody.useGravity = false;
+
+        Debug.Log("Pastry - pasrty Spawned");
     }
 
-
     public void ThrowPastry(Vector3 direction) {
-        if(pastry == null) {
+        if(!HasPastry()) {
             Debug.LogError("Tried throwind Pastry - no Pastry to throw");
             return;
         }
 
         Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
+        pastryBody.useGravity = true;
+
+
         float forceModifier = 10;
         pastryBody.AddForce(direction * forceModifier, ForceMode.Impulse);
 
@@ -41,11 +55,16 @@ public class PastryHoldPoint : MonoBehaviour {
         Debug.Log("ThrowPastry - direction: " + direction);
     }
 
-
     public bool HasPastry() {
         return pastry != null ? true : false;
     }
 
+    private void KeepPastryInfront() {
+        if(pastry.IsBeingCarried()) {
+            float straighteningSpeed = 2f;
+            pastry.transform.position = Vector3.Slerp(pastry.transform.position, this.transform.position, straighteningSpeed * Time.deltaTime);
+        }
+    }
 
 
 

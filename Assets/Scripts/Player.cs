@@ -31,6 +31,7 @@ public class Player : MonoBehaviour {
     }
 
     private void GameInput_OnThrowPastry(object sender, System.EventArgs e) {
+        if(aimState != AimState.Aiming) return;
         throwableObjectParent.ThrowPastry(throwDirection);
     }
 

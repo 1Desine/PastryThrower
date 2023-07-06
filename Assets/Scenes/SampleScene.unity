@@ -532,7 +532,7 @@ GameObject:
   - component: {fileID: 1768701029}
   - component: {fileID: 1768701030}
   m_Layer: 0
-  m_Name: ThrowableObjectParent
+  m_Name: PastryHoldPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -546,7 +546,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1768701028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -565,8 +565,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b82ee14f73c92b4285bb1a2543d6895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throwableObjectParentSOList:
-  - {fileID: 11400000, guid: 8bbd21ad7845c1246aba131851623c0b, type: 2}
+  throwableObjectsSOList: {fileID: 11400000, guid: f89f38f698c297a4c96221427693f481,
+    type: 2}
 --- !u!1 &2088272317
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,7 +665,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2088272317}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.09, z: 0}
+  m_LocalPosition: {x: 0, y: -1.33, z: 0}
   m_LocalScale: {x: 4.1201, y: 0.1273111, z: 4.1201}
   m_ConstrainProportionsScale: 0
   m_Children: []

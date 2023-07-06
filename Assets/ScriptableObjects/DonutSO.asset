@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb1353dee7327664e84f142f07217105, type: 3}
   m_Name: DonutSO
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4851662736730854152, guid: ff1014aa2600ffa4c88470ee62871a12, type: 3}
+  prefab: {fileID: -1532369253639599620, guid: ff1014aa2600ffa4c88470ee62871a12, type: 3}
   name: Donut

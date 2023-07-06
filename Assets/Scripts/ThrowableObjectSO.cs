@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class ThrowableObjectSO : ScriptableObject {
 
-    public GameObject prefab;
+    public Pastry prefab;
     public new string name;
 
 }
