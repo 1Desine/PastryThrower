@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThrowableObjectParent : MonoBehaviour {
+public class PastryHoldPoint : MonoBehaviour {
 
-    [SerializeField] private List<ThrowableObjectSO> throwableObjectParentSOList;
-
+    [SerializeField] private ThrowableObjectsSOList throwableObjectsSOList;
 
     GameObject pastry;
-
 
 
     private void Start() {
@@ -22,14 +20,10 @@ public class ThrowableObjectParent : MonoBehaviour {
             return;
         }
 
-        GameObject randomPastry = throwableObjectParentSOList[Random.Range(0, throwableObjectParentSOList.Count)].prefab;
-        pastry = Instantiate(randomPastry, null);
+        GameObject randomPastry = throwableObjectsSOList.GetRandomPastry();
+        pastry = Instantiate(randomPastry);
 
-        if(pastry != null) {
-            Debug.LogError("Tried spawn Pastry - pasrty Spawned");
-        } else {
-            Debug.LogError("Tried spawn Pastry - pasrty did not Spawn");
-        }
+        Debug.LogError("Tried spawn Pastry - pasrty Spawned");
     }
 
 

@@ -8,5 +8,4 @@ public class ThrowableObjectSO : ScriptableObject {
     public GameObject prefab;
     public new string name;
 
-
 }

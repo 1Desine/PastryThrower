@@ -6,13 +6,13 @@ using UnityEngine.EventSystems;
 public class Player : MonoBehaviour {
 
     [SerializeField] private GameInput gameInput;
-    [SerializeField] private ThrowableObjectParent throwableObjectParent;
+    [SerializeField] private PastryHoldPoint throwableObjectParent;
 
     [SerializeField] private float mouseSensitivity = 0.1f;
 
 
-    private InteractionState interactionState;
-    private enum InteractionState {
+    private AimState aimState;
+    private enum AimState {
         FreeLook,
         Aiming,
     }
@@ -20,7 +20,6 @@ public class Player : MonoBehaviour {
 
 
     private float throwPower;
-
     private Vector3 throwDirection;
 
 
@@ -37,10 +36,7 @@ public class Player : MonoBehaviour {
 
     private void Update() {
         HandleLook();
-        UpdateInteractionState();
-
-        Debug.Log(interactionState);
-        Debug.Log(throwPower);
+        UpdateAimState();
 
 
         Debug.DrawRay(transform.position, transform.forward, Color.green);
@@ -52,11 +48,13 @@ public class Player : MonoBehaviour {
     private void HandleLook() {
         Vector2 lookInput = gameInput.GetLookDelta();
 
-        if(interactionState == InteractionState.FreeLook) {
+        if(aimState == AimState.FreeLook) {
             Vector3 lookRoation = new Vector3(lookInput.y, lookInput.x, 0f);
             transform.eulerAngles += lookRoation * mouseSensitivity;
             throwPower = 0;
-        } else if(interactionState == InteractionState.Aiming) {
+            throwDirection = Vector3.zero;
+
+        } else if(aimState == AimState.Aiming) {
             throwPower -= lookInput.y / Screen.height;
             throwPower = Mathf.Abs(throwPower);
 
@@ -65,9 +63,9 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private void UpdateInteractionState() {
-        interactionState = gameInput.GetAimBool() == false ? 
-            InteractionState.FreeLook : InteractionState.Aiming;
+    private void UpdateAimState() {
+        aimState = gameInput.GetAimBool() == false ?
+            AimState.FreeLook : AimState.Aiming;
     }
 
 
