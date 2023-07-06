@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,11 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private float mouseSensitivity = 0.1f;
 
+    public event EventHandler<OnScoreChangedEventArgs> OnScoreChanged;
+    public class OnScoreChangedEventArgs : EventArgs {
+        public int score;
+    }
+
 
     private AimState aimState;
     private enum AimState {
@@ -17,10 +23,12 @@ public class Player : MonoBehaviour {
         Aiming,
     }
 
-
-
     private float throwPower;
     private Vector3 throwDirection;
+
+
+    private int playerScore;
+
 
 
     private void Start() {
@@ -32,7 +40,7 @@ public class Player : MonoBehaviour {
     }
 
     private void GameInput_OnSpawnPastry(object sender, System.EventArgs e) {
-        pastryHoldPoint.SpawnPastry();
+        pastryHoldPoint.SpawnPastry(PastryHitTargetCallback);
     }
 
     private void GameInput_OnThrowPastry(object sender, System.EventArgs e) {
@@ -76,7 +84,12 @@ public class Player : MonoBehaviour {
             AimState.FreeLook : AimState.Aiming;
     }
 
-
+    private void PastryHitTargetCallback() {
+        playerScore += 10;
+        OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
+            score = playerScore
+        });
+    }
 
 
 

@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Pastry : MonoBehaviour {
 
+
+    public delegate void HitTargetCallBack();
+    public HitTargetCallBack hitTargetCallBack;
+
+
+
     private bool isBeingCarried;
 
 
@@ -20,6 +26,15 @@ public class Pastry : MonoBehaviour {
     public void SetBeingCarried_False() {
         isBeingCarried = false;
     }
+
+
+    private void OnTriggerEnter(Collider trigger) {
+        Debug.Log(trigger.transform.position);
+        if(trigger.gameObject.GetComponent<Target>() != null) {
+            hitTargetCallBack();
+        }
+    }
+
 
 
 }

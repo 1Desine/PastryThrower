@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using static Pastry;
 
 public class PastryHoldPoint : MonoBehaviour {
 
@@ -10,16 +11,12 @@ public class PastryHoldPoint : MonoBehaviour {
     Pastry pastry;
 
 
-    private void Start() {
-        SpawnPastry();
-    }
-
 
     private void Update() {
         KeepPastryInfront();
     }
 
-    public void SpawnPastry() {
+    public void SpawnPastry(HitTargetCallBack callBack) {
         if(HasPastry()) {
             Debug.LogError("Tried spawn Pastry - pastry != null");
             return;
@@ -27,6 +24,8 @@ public class PastryHoldPoint : MonoBehaviour {
 
         Pastry randomPastry = throwableObjectsSOList.GetRandomPastry();
         pastry = Instantiate(randomPastry);
+        pastry.hitTargetCallBack = callBack;
+
         pastry.transform.position = this.transform.position;
 
         Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
