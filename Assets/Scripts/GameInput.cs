@@ -9,6 +9,7 @@ public class GameInput : MonoBehaviour {
     private PlayerInputActions playerInputActions;
 
     public event EventHandler OnThrowPastry;
+    public event EventHandler OnSpawnPastry;
 
 
 
@@ -17,9 +18,12 @@ public class GameInput : MonoBehaviour {
         playerInputActions.Enable();
 
         playerInputActions.Player.ThrowPastry.performed += ThrowPastry_performed;
+        playerInputActions.Player.SpawnPastry.performed += SpawnPastry_performed;
     }
 
-
+    private void SpawnPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnSpawnPastry?.Invoke(this, EventArgs.Empty);
+    }
 
     private void ThrowPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnThrowPastry?.Invoke(this, EventArgs.Empty);

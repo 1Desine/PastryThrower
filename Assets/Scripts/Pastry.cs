@@ -17,7 +17,9 @@ public class Pastry : MonoBehaviour {
         return isBeingCarried;
     }
 
-
+    public void SetBeingCarried_False() {
+        isBeingCarried = false;
+    }
 
 
 }

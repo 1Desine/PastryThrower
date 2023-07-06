@@ -19,7 +19,6 @@ public class PastryHoldPoint : MonoBehaviour {
 
     private void Update() {
         KeepPastryInfront();
-
     }
 
     public void SpawnPastry() {
@@ -47,12 +46,12 @@ public class PastryHoldPoint : MonoBehaviour {
         Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
         pastryBody.useGravity = true;
 
+        pastry.SetBeingCarried_False();
 
         float forceModifier = 10;
         pastryBody.AddForce(direction * forceModifier, ForceMode.Impulse);
 
-
-        Debug.Log("ThrowPastry - direction: " + direction);
+        pastry = null;
     }
 
     public bool HasPastry() {
@@ -60,9 +59,11 @@ public class PastryHoldPoint : MonoBehaviour {
     }
 
     private void KeepPastryInfront() {
-        if(pastry.IsBeingCarried()) {
-            float straighteningSpeed = 2f;
-            pastry.transform.position = Vector3.Slerp(pastry.transform.position, this.transform.position, straighteningSpeed * Time.deltaTime);
+        if(HasPastry()) {
+            if(pastry.IsBeingCarried()) {
+                float straighteningSpeed = 2f;
+                pastry.transform.position = Vector3.Slerp(pastry.transform.position, this.transform.position, straighteningSpeed * Time.deltaTime);
+            }
         }
     }
 

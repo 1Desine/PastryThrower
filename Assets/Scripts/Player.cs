@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class Player : MonoBehaviour {
 
     [SerializeField] private GameInput gameInput;
-    [SerializeField] private PastryHoldPoint throwableObjectParent;
+    [SerializeField] private PastryHoldPoint pastryHoldPoint;
 
     [SerializeField] private float mouseSensitivity = 0.1f;
 
@@ -28,11 +28,16 @@ public class Player : MonoBehaviour {
         Cursor.visible = false;
 
         gameInput.OnThrowPastry += GameInput_OnThrowPastry;
+        gameInput.OnSpawnPastry += GameInput_OnSpawnPastry;
+    }
+
+    private void GameInput_OnSpawnPastry(object sender, System.EventArgs e) {
+        pastryHoldPoint.SpawnPastry();
     }
 
     private void GameInput_OnThrowPastry(object sender, System.EventArgs e) {
         if(aimState != AimState.Aiming) return;
-        throwableObjectParent.ThrowPastry(throwDirection);
+        pastryHoldPoint.ThrowPastry(throwDirection);
     }
 
     private void Update() {

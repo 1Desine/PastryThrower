@@ -519,7 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameInput: {fileID: 768391677}
-  throwableObjectParent: {fileID: 1768701030}
+  pastryHoldPoint: {fileID: 1768701030}
   mouseSensitivity: 0.1
 --- !u!1 &1768701028
 GameObject:

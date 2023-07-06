@@ -53,6 +53,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpawnPastry"",
+                    ""type"": ""Button"",
+                    ""id"": ""cee441bf-2432-452c-9c37-b8f4dc449f71"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -88,6 +97,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""ThrowPastry"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""507c43b1-eedf-49f6-baa5-c83a9dd1f54b"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpawnPastry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -99,6 +119,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_ThrowPastry = m_Player.FindAction("ThrowPastry", throwIfNotFound: true);
+        m_Player_SpawnPastry = m_Player.FindAction("SpawnPastry", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,6 +184,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_ThrowPastry;
+    private readonly InputAction m_Player_SpawnPastry;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -170,6 +192,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @ThrowPastry => m_Wrapper.m_Player_ThrowPastry;
+        public InputAction @SpawnPastry => m_Wrapper.m_Player_SpawnPastry;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -188,6 +211,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ThrowPastry.started += instance.OnThrowPastry;
             @ThrowPastry.performed += instance.OnThrowPastry;
             @ThrowPastry.canceled += instance.OnThrowPastry;
+            @SpawnPastry.started += instance.OnSpawnPastry;
+            @SpawnPastry.performed += instance.OnSpawnPastry;
+            @SpawnPastry.canceled += instance.OnSpawnPastry;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -201,6 +227,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ThrowPastry.started -= instance.OnThrowPastry;
             @ThrowPastry.performed -= instance.OnThrowPastry;
             @ThrowPastry.canceled -= instance.OnThrowPastry;
+            @SpawnPastry.started -= instance.OnSpawnPastry;
+            @SpawnPastry.performed -= instance.OnSpawnPastry;
+            @SpawnPastry.canceled -= instance.OnSpawnPastry;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -223,5 +252,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnThrowPastry(InputAction.CallbackContext context);
+        void OnSpawnPastry(InputAction.CallbackContext context);
     }
 }
