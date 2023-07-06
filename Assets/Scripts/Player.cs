@@ -53,10 +53,10 @@ public class Player : MonoBehaviour {
 
     private void HandleLook() {
         Vector2 lookInput = gameInput.GetLookDelta();
+        Vector3 lookRoation = Vector3.zero;
 
         if(aimState == AimState.FreeLook) {
-            Vector3 lookRoation = new Vector3(lookInput.y, lookInput.x, 0f);
-            transform.eulerAngles += lookRoation * mouseSensitivity;
+            lookRoation += new Vector3(lookInput.y, 0, 0);
             throwPower = 0;
             throwDirection = Vector3.zero;
 
@@ -67,6 +67,8 @@ public class Player : MonoBehaviour {
             throwDirection = transform.forward * throwPower + transform.up * throwPower;
             Debug.DrawRay(transform.position, throwDirection);
         }
+        lookRoation += new Vector3(0, lookInput.x, 0);
+        transform.eulerAngles += lookRoation * mouseSensitivity;
     }
 
     private void UpdateAimState() {

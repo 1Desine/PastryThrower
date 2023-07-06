@@ -15,8 +15,6 @@ public class PastryHoldPoint : MonoBehaviour {
     }
 
 
-
-
     private void Update() {
         KeepPastryInfront();
     }
