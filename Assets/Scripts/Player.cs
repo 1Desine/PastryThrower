@@ -89,6 +89,11 @@ public class Player : MonoBehaviour {
         switch(hitTargetCallBackArgs.targetType) {
             default: Debug.LogError("hitTargetCallBackArgs.targetType = null"); break;
             case HitTargetCallBackArgs.TargetType.Static:
+                Debug.Log("Hit static");
+                playerScore += (int)hitTargetCallBackArgs.distance;
+                break;
+            case HitTargetCallBackArgs.TargetType.Dynamic:
+                Debug.Log("Hit dynamic");
                 playerScore += (int)hitTargetCallBackArgs.distance;
                 break;
 

@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ThrowableObjectsSOList
   m_EditorClassIdentifier: 
   throwableObjectsSOList:
+  - {fileID: 11400000, guid: 2114626285ad74144b7b5e0438919c48, type: 2}
   - {fileID: 11400000, guid: 8bbd21ad7845c1246aba131851623c0b, type: 2}
