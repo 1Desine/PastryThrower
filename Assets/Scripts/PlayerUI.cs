@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
 
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private Image throwPowerImage;
 
     [SerializeField] private Player player;
 
@@ -14,6 +16,12 @@ public class PlayerUI : MonoBehaviour {
 
     private void Start() {
         player.OnScoreChanged += Player_OnScoreChanged;
+        player.OnThrowPowerChanged += Player_OnThrowPowerChanged;
+
+    }
+
+    private void Player_OnThrowPowerChanged(object sender, Player.OnThrowPowerChangedEventArgs e) {
+        UpdateThrowPower(e.throwPower);
     }
 
     private void Player_OnScoreChanged(object sender, Player.OnScoreChangedEventArgs e) {
@@ -30,6 +38,9 @@ public class PlayerUI : MonoBehaviour {
     }
     private void UpdateScore(int score) {
         scoreText.text = score.ToString();
+    }
+    private void UpdateThrowPower(float throwPower) {
+        throwPowerImage.fillAmount = 1 - throwPower;
     }
 
 }

@@ -37,13 +37,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Aim"",
-                    ""type"": ""Button"",
-                    ""id"": ""edd0c43e-3f44-4f8b-8089-81e35c574e21"",
-                    ""expectedControlType"": ""Button"",
+                    ""name"": ""ThrowSpeed"",
+                    ""type"": ""Value"",
+                    ""id"": ""494fc69b-8654-448f-84c7-e6dd9791ce9e"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ThrowPastry"",
@@ -78,17 +78,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""44f2ea10-5eb5-44f9-868c-4085e3047faa"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Aim"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""d2fde6fb-fe9e-4207-8ce4-33fb50313e83"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
@@ -108,6 +97,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SpawnPastry"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4b1863f-96e3-4365-b036-a0abc6628796"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -117,7 +117,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
+        m_Player_ThrowSpeed = m_Player.FindAction("ThrowSpeed", throwIfNotFound: true);
         m_Player_ThrowPastry = m_Player.FindAction("ThrowPastry", throwIfNotFound: true);
         m_Player_SpawnPastry = m_Player.FindAction("SpawnPastry", throwIfNotFound: true);
     }
@@ -182,7 +182,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_Aim;
+    private readonly InputAction m_Player_ThrowSpeed;
     private readonly InputAction m_Player_ThrowPastry;
     private readonly InputAction m_Player_SpawnPastry;
     public struct PlayerActions
@@ -190,7 +190,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         private @PlayerInputActions m_Wrapper;
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @Aim => m_Wrapper.m_Player_Aim;
+        public InputAction @ThrowSpeed => m_Wrapper.m_Player_ThrowSpeed;
         public InputAction @ThrowPastry => m_Wrapper.m_Player_ThrowPastry;
         public InputAction @SpawnPastry => m_Wrapper.m_Player_SpawnPastry;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -205,9 +205,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Aim.started += instance.OnAim;
-            @Aim.performed += instance.OnAim;
-            @Aim.canceled += instance.OnAim;
+            @ThrowSpeed.started += instance.OnThrowSpeed;
+            @ThrowSpeed.performed += instance.OnThrowSpeed;
+            @ThrowSpeed.canceled += instance.OnThrowSpeed;
             @ThrowPastry.started += instance.OnThrowPastry;
             @ThrowPastry.performed += instance.OnThrowPastry;
             @ThrowPastry.canceled += instance.OnThrowPastry;
@@ -221,9 +221,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Aim.started -= instance.OnAim;
-            @Aim.performed -= instance.OnAim;
-            @Aim.canceled -= instance.OnAim;
+            @ThrowSpeed.started -= instance.OnThrowSpeed;
+            @ThrowSpeed.performed -= instance.OnThrowSpeed;
+            @ThrowSpeed.canceled -= instance.OnThrowSpeed;
             @ThrowPastry.started -= instance.OnThrowPastry;
             @ThrowPastry.performed -= instance.OnThrowPastry;
             @ThrowPastry.canceled -= instance.OnThrowPastry;
@@ -250,7 +250,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnLook(InputAction.CallbackContext context);
-        void OnAim(InputAction.CallbackContext context);
+        void OnThrowSpeed(InputAction.CallbackContext context);
         void OnThrowPastry(InputAction.CallbackContext context);
         void OnSpawnPastry(InputAction.CallbackContext context);
     }

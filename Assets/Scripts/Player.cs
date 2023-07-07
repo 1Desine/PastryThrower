@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using static Pastry;
 
 public class Player : MonoBehaviour {
@@ -16,16 +17,16 @@ public class Player : MonoBehaviour {
     public class OnScoreChangedEventArgs : EventArgs {
         public int score;
     }
-
-
-    private AimState aimState;
-    private enum AimState {
-        FreeLook,
-        Aiming,
+    public event EventHandler<OnThrowPowerChangedEventArgs> OnThrowPowerChanged;
+    public class OnThrowPowerChangedEventArgs : EventArgs {
+        public float throwPower;
     }
 
-    private float throwPower;
+
+
     private Vector3 throwDirection;
+    private float throwPower = 0.5f;
+    private float throwPower_PerModify = 0.1f;
 
 
     private int playerScore;
@@ -45,13 +46,22 @@ public class Player : MonoBehaviour {
     }
 
     private void GameInput_OnThrowPastry(object sender, System.EventArgs e) {
-        if(aimState != AimState.Aiming) return;
         pastryHoldPoint.ThrowPastry(throwDirection);
+    }
+
+    private void LateUpdate() {
+        // Preparing UI
+        OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs(){
+            throwPower = throwPower
+        });
+        OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
+            score = playerScore
+        });
     }
 
     private void Update() {
         HandleLook();
-        UpdateAimState();
+        HandleThrowPower();
 
 
         Debug.DrawRay(transform.position, transform.forward, Color.green);
@@ -62,28 +72,37 @@ public class Player : MonoBehaviour {
 
     private void HandleLook() {
         Vector2 lookInput = gameInput.GetLookDelta();
-        Vector3 lookRoation = Vector3.zero;
+        Vector3 lookRoation = new Vector3(lookInput.y, lookInput.x, 0);
 
-        if(aimState == AimState.FreeLook) {
-            lookRoation += new Vector3(lookInput.y, 0, 0);
-            throwPower = 0;
-            throwDirection = Vector3.zero;
-
-        } else if(aimState == AimState.Aiming) {
-            throwPower -= lookInput.y / Screen.height;
-            throwPower = Mathf.Abs(throwPower);
-
-            throwDirection = transform.forward * throwPower + transform.up * throwPower;
-            Debug.DrawRay(transform.position, throwDirection);
-        }
-        lookRoation += new Vector3(0, lookInput.x, 0);
+        throwDirection = transform.forward * throwPower + transform.up * throwPower;
         transform.eulerAngles += lookRoation * mouseSensitivity;
+        Debug.DrawRay(transform.position, throwDirection);
+    }
+    private void HandleThrowPower() {
+        switch(gameInput.GetScrollWheel()) {
+            case 1:
+                if(throwPower < 1) {
+                    throwPower += throwPower_PerModify;
+
+                    OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs {
+                        throwPower = throwPower,
+                    });
+                }
+                break;
+            case -1:
+                if(throwPower > 0) {
+                    throwPower -= throwPower_PerModify;
+
+                    OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs {
+                        throwPower = throwPower,
+                    });
+                }
+                break;
+        }
+        if(throwPower < 0) throwPower = 0;
+        if(throwPower > 1) throwPower = 1;
     }
 
-    private void UpdateAimState() {
-        aimState = gameInput.GetAimBool() == false ?
-            AimState.FreeLook : AimState.Aiming;
-    }
 
     private void PastryHitTargetCallback(HitTargetCallBackArgs hitTargetCallBackArgs) {
         switch(hitTargetCallBackArgs.targetType) {
@@ -94,9 +113,8 @@ public class Player : MonoBehaviour {
                 break;
             case HitTargetCallBackArgs.TargetType.Dynamic:
                 Debug.Log("Hit dynamic");
-                playerScore += (int)hitTargetCallBackArgs.distance;
+                playerScore += (int)hitTargetCallBackArgs.distance; // change later
                 break;
-
         }
 
         OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {

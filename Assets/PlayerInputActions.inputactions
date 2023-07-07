@@ -15,13 +15,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Aim",
-                    "type": "Button",
-                    "id": "edd0c43e-3f44-4f8b-8089-81e35c574e21",
-                    "expectedControlType": "Button",
+                    "name": "ThrowSpeed",
+                    "type": "Value",
+                    "id": "494fc69b-8654-448f-84c7-e6dd9791ce9e",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ThrowPastry",
@@ -56,17 +56,6 @@
                 },
                 {
                     "name": "",
-                    "id": "44f2ea10-5eb5-44f9-868c-4085e3047faa",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Aim",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "d2fde6fb-fe9e-4207-8ce4-33fb50313e83",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -84,6 +73,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "SpawnPastry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c4b1863f-96e3-4365-b036-a0abc6628796",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThrowSpeed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
