@@ -76,6 +76,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ac5f5a11408920439efc12381b1562a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  visual: {fileID: 7880932062554590781}
+  setRandomColor: 1
   targetType: 0
 --- !u!1 &7880932062554590781
 GameObject:
