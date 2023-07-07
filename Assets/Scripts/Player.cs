@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static Pastry;
 
 public class Player : MonoBehaviour {
 
@@ -84,8 +85,15 @@ public class Player : MonoBehaviour {
             AimState.FreeLook : AimState.Aiming;
     }
 
-    private void PastryHitTargetCallback() {
-        playerScore += 10;
+    private void PastryHitTargetCallback(HitTargetCallBackArgs hitTargetCallBackArgs) {
+        switch(hitTargetCallBackArgs.targetType) {
+            default: Debug.LogError("hitTargetCallBackArgs.targetType = null"); break;
+            case HitTargetCallBackArgs.TargetType.Static:
+                playerScore += (int)hitTargetCallBackArgs.distance;
+                break;
+
+        }
+
         OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
             score = playerScore
         });

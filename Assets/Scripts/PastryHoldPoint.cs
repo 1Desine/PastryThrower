@@ -8,6 +8,8 @@ public class PastryHoldPoint : MonoBehaviour {
 
     [SerializeField] private ThrowableObjectsSOList throwableObjectsSOList;
 
+    [SerializeField] private Transform mapPastryHolder;
+
     Pastry pastry;
 
 
@@ -23,7 +25,7 @@ public class PastryHoldPoint : MonoBehaviour {
         }
 
         Pastry randomPastry = throwableObjectsSOList.GetRandomPastry();
-        pastry = Instantiate(randomPastry);
+        pastry = Instantiate(randomPastry, mapPastryHolder);
         pastry.hitTargetCallBack = callBack;
 
         pastry.transform.position = this.transform.position;
