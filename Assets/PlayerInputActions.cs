@@ -55,9 +55,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ThrowPastry"",
+                    ""name"": ""Throw"",
                     ""type"": ""Button"",
                     ""id"": ""96922d8b-2d49-4689-8edb-a30b5a25f15d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ThrowCancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""fae06a26-b3bc-464a-8ee1-9026066b5d86"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -189,7 +198,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ThrowPastry"",
+                    ""action"": ""Throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""531fe8a9-1ce2-4841-a4bb-2a28af71d411"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowCancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -203,7 +223,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-        m_Player_ThrowPastry = m_Player.FindAction("ThrowPastry", throwIfNotFound: true);
+        m_Player_Throw = m_Player.FindAction("Throw", throwIfNotFound: true);
+        m_Player_ThrowCancel = m_Player.FindAction("ThrowCancel", throwIfNotFound: true);
         m_Player_ThrowSpeed = m_Player.FindAction("ThrowSpeed", throwIfNotFound: true);
         m_Player_SpawnPastry = m_Player.FindAction("SpawnPastry", throwIfNotFound: true);
     }
@@ -270,7 +291,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_ThrowPastry;
+    private readonly InputAction m_Player_Throw;
+    private readonly InputAction m_Player_ThrowCancel;
     private readonly InputAction m_Player_ThrowSpeed;
     private readonly InputAction m_Player_SpawnPastry;
     public struct PlayerActions
@@ -280,7 +302,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputAction @ThrowPastry => m_Wrapper.m_Player_ThrowPastry;
+        public InputAction @Throw => m_Wrapper.m_Player_Throw;
+        public InputAction @ThrowCancel => m_Wrapper.m_Player_ThrowCancel;
         public InputAction @ThrowSpeed => m_Wrapper.m_Player_ThrowSpeed;
         public InputAction @SpawnPastry => m_Wrapper.m_Player_SpawnPastry;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -301,9 +324,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
-            @ThrowPastry.started += instance.OnThrowPastry;
-            @ThrowPastry.performed += instance.OnThrowPastry;
-            @ThrowPastry.canceled += instance.OnThrowPastry;
+            @Throw.started += instance.OnThrow;
+            @Throw.performed += instance.OnThrow;
+            @Throw.canceled += instance.OnThrow;
+            @ThrowCancel.started += instance.OnThrowCancel;
+            @ThrowCancel.performed += instance.OnThrowCancel;
+            @ThrowCancel.canceled += instance.OnThrowCancel;
             @ThrowSpeed.started += instance.OnThrowSpeed;
             @ThrowSpeed.performed += instance.OnThrowSpeed;
             @ThrowSpeed.canceled += instance.OnThrowSpeed;
@@ -323,9 +349,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
-            @ThrowPastry.started -= instance.OnThrowPastry;
-            @ThrowPastry.performed -= instance.OnThrowPastry;
-            @ThrowPastry.canceled -= instance.OnThrowPastry;
+            @Throw.started -= instance.OnThrow;
+            @Throw.performed -= instance.OnThrow;
+            @Throw.canceled -= instance.OnThrow;
+            @ThrowCancel.started -= instance.OnThrowCancel;
+            @ThrowCancel.performed -= instance.OnThrowCancel;
+            @ThrowCancel.canceled -= instance.OnThrowCancel;
             @ThrowSpeed.started -= instance.OnThrowSpeed;
             @ThrowSpeed.performed -= instance.OnThrowSpeed;
             @ThrowSpeed.canceled -= instance.OnThrowSpeed;
@@ -354,7 +383,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
-        void OnThrowPastry(InputAction.CallbackContext context);
+        void OnThrow(InputAction.CallbackContext context);
+        void OnThrowCancel(InputAction.CallbackContext context);
         void OnThrowSpeed(InputAction.CallbackContext context);
         void OnSpawnPastry(InputAction.CallbackContext context);
     }

@@ -9,7 +9,7 @@ public class GameInput : MonoBehaviour {
 
     private PlayerInputActions playerInputActions;
 
-    public event EventHandler OnThrowPastry;
+    public event EventHandler OnThrowCanceled;
     public event EventHandler OnSpawnPastry;
     public event EventHandler OnJump;
 
@@ -19,17 +19,20 @@ public class GameInput : MonoBehaviour {
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
 
-        playerInputActions.Player.ThrowPastry.performed += ThrowPastry_performed;
-        playerInputActions.Player.SpawnPastry.performed += SpawnPastry_performed;
+        playerInputActions.Player.ThrowCancel.performed += ThrowCancel_performed;
         playerInputActions.Player.Jump.performed += Jump_performed;
     }
 
 
+
+    public bool IsThrowButtonDown() {
+        return playerInputActions.Player.Throw.IsPressed();
+    }
+    private void ThrowCancel_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnThrowCanceled?.Invoke(this, EventArgs.Empty);
+    }
     private void SpawnPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnSpawnPastry?.Invoke(this, EventArgs.Empty);
-    }
-    private void ThrowPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        OnThrowPastry?.Invoke(this, EventArgs.Empty);
     }
     private void Jump_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnJump?.Invoke(this, EventArgs.Empty);
@@ -47,6 +50,6 @@ public class GameInput : MonoBehaviour {
     }
 
 
-    
+
 
 }

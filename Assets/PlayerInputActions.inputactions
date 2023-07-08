@@ -33,9 +33,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ThrowPastry",
+                    "name": "Throw",
                     "type": "Button",
                     "id": "96922d8b-2d49-4689-8edb-a30b5a25f15d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThrowCancel",
+                    "type": "Button",
+                    "id": "fae06a26-b3bc-464a-8ee1-9026066b5d86",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -167,7 +176,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ThrowPastry",
+                    "action": "Throw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "531fe8a9-1ce2-4841-a4bb-2a28af71d411",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThrowCancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

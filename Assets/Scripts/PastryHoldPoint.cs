@@ -61,7 +61,7 @@ public class PastryHoldPoint : MonoBehaviour {
     private void KeepPastryInfront() {
         if(HasPastry()) {
             if(pastry.IsBeingCarried()) {
-                float straighteningSpeed = 10f;
+                float straighteningSpeed = 40f;
                 pastry.transform.position = Vector3.Slerp(pastry.transform.position, this.transform.position, straighteningSpeed * Time.deltaTime);
             }
         }

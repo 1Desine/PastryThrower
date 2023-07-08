@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,13 +16,14 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform playerHead;
     [SerializeField] private float mouseSensitivity = 0.1f;
 
+
     public event EventHandler<OnScoreChangedEventArgs> OnScoreChanged;
     public class OnScoreChangedEventArgs : EventArgs {
         public int score;
     }
     public event EventHandler<OnThrowPowerChangedEventArgs> OnThrowPowerChanged;
     public class OnThrowPowerChangedEventArgs : EventArgs {
-        public float throwPower;
+        public float throwPowerNormalized;
     }
     public event EventHandler<OnAmmoChangedEventArgs> OnAmmoChanged;
     public class OnAmmoChangedEventArgs : EventArgs {
@@ -30,8 +32,15 @@ public class Player : MonoBehaviour {
 
 
     private Vector3 throwDirection;
-    private float throwPower = 0.5f;
-    private float throwPower_PerModify = 0.1f;
+    private float throwPowerNormalized;
+    private float throwPower_AddUpSpeed = 1f;
+
+    private ThrowingState throwingState;
+    private enum ThrowingState {
+        Idle,
+        AddingPower,
+        Canceled,
+    }
 
     private bool useGravity;
     private float airborneForTime;
@@ -53,20 +62,21 @@ public class Player : MonoBehaviour {
         Cursor.visible = false;
 
         useGravity = true;
-
         ammo = ammoMax;
+        throwingState = ThrowingState.Idle;
     }
 
     private void Start() {
-        gameInput.OnThrowPastry += GameInput_OnThrowPastry;
-        gameInput.OnSpawnPastry += GameInput_OnSpawnPastry;
+        gameInput.OnThrowCanceled += GameInput_OnThrowCanceled;
         gameInput.OnJump += GameInput_OnJump;
+
+        StartCoroutine(CorountineUI());
     }
 
-    private void LateUpdate() {
-        // Preparing UI
+    private IEnumerator CorountineUI() {
+        yield return new WaitForSeconds(0.01f);
         OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs() {
-            throwPower = throwPower
+            throwPowerNormalized = throwPowerNormalized
         });
         OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
             score = playerScore
@@ -76,13 +86,32 @@ public class Player : MonoBehaviour {
         });
     }
 
+
     private void Update() {
         HandleLook();
         HandleMovement();
-        HandleThrowPower();
-        HandleGravity();
-        HadlePushindObjects();
+        HandleThrowing();
+        Gravity();
+        PushindObjects();
+        CoolDown();
 
+        Debug.DrawRay(playerHead.transform.position, playerHead.transform.forward, Color.green);
+    }
+
+
+
+    private void SpawnPastry() {
+        if(ammo <= 0) return;
+        if(pastryHoldPoint.SpawnPastry(PastryHitTargetCallback)) {
+
+            ammo--;
+            OnAmmoChanged?.Invoke(this, new OnAmmoChangedEventArgs {
+                ammo = ammo
+            });
+        }
+    }
+
+    private void CoolDown() {
         ammoCooldown -= Time.deltaTime;
         if(ammoCooldown < 0) {
             ammoCooldown = ammoCooldownMax;
@@ -93,25 +122,45 @@ public class Player : MonoBehaviour {
                 });
             }
         }
-
-        Debug.DrawRay(playerHead.transform.position, playerHead.transform.forward, Color.green);
     }
 
+    private void HandleThrowing() {
+        bool throwButtonDown = gameInput.IsThrowButtonDown();
 
-
-    private void GameInput_OnSpawnPastry(object sender, EventArgs e) {
-        if(ammo <= 0) return;
-        if(pastryHoldPoint.SpawnPastry(PastryHitTargetCallback)) {
-
-            ammo--;
-            OnAmmoChanged?.Invoke(this, new OnAmmoChangedEventArgs {
-                ammo = ammo
+        if(throwingState == ThrowingState.Idle) {
+            if(throwButtonDown) {
+                SpawnPastry();
+                throwingState = ThrowingState.AddingPower;
+            }
+        } else if(throwingState == ThrowingState.AddingPower) {
+            if(throwPowerNormalized < 1) {
+                throwPowerNormalized += throwPower_AddUpSpeed * Time.deltaTime;
+            }
+            if(throwButtonDown == false) {
+                throwingState = ThrowingState.Idle;
+                float minThrowingPowerNormalized = 0.1f;
+                if(throwPowerNormalized > minThrowingPowerNormalized) {
+                    pastryHoldPoint.ThrowPastry(throwDirection);
+                }
+                throwPowerNormalized = 0;
+            }
+            OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs() {
+                throwPowerNormalized = throwPowerNormalized
+            });
+        } else if(throwingState == ThrowingState.Canceled) {
+            throwPowerNormalized = 0;
+            if(throwButtonDown == false) {
+                throwingState = ThrowingState.Idle;
+            }
+            OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs() {
+                throwPowerNormalized = throwPowerNormalized
             });
         }
     }
-    private void GameInput_OnThrowPastry(object sender, EventArgs e) {
-        pastryHoldPoint.ThrowPastry(throwDirection);
+    private void GameInput_OnThrowCanceled(object sender, EventArgs e) {
+        throwingState = ThrowingState.Canceled;
     }
+
     private void GameInput_OnJump(object sender, EventArgs e) {
         Jump();
     }
@@ -125,7 +174,7 @@ public class Player : MonoBehaviour {
         transform.eulerAngles += PlayerBodyRoationY * mouseSensitivity; // Rotate player
         playerHead.transform.eulerAngles += playerHeadRoationX * mouseSensitivity; // Rotate playerHead
 
-        throwDirection = playerHead.transform.forward * throwPower + playerHead.transform.up * throwPower;
+        throwDirection = playerHead.transform.forward * throwPowerNormalized + playerHead.transform.up * throwPowerNormalized;
 
         Debug.DrawRay(playerHead.transform.position, throwDirection);
     }
@@ -136,7 +185,7 @@ public class Player : MonoBehaviour {
         moveDir.Normalize();
 
         bool canMove = true;
-        float playerSpeed = 2f;
+        float playerSpeed = 5f;
         float moveDistance = playerSpeed * Time.deltaTime;
         if(Physics.CapsuleCast(transform.position, playerHead.transform.position, playerRadius, moveDir, out RaycastHit hit, moveDistance)) {
             canMove = false;
@@ -150,33 +199,10 @@ public class Player : MonoBehaviour {
         float jumpHeight = 1f;
         transform.position += Vector3.up * jumpHeight;
     }
-    private void HandleThrowPower() {
-        switch(gameInput.GetScrollWheel()) {
-            case 1:
-                if(throwPower < 1) {
-                    throwPower += throwPower_PerModify;
-
-                    OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs {
-                        throwPower = throwPower,
-                    });
-                }
-                break;
-            case -1:
-                if(throwPower > 0) {
-                    throwPower -= throwPower_PerModify;
-
-                    OnThrowPowerChanged?.Invoke(this, new OnThrowPowerChangedEventArgs {
-                        throwPower = throwPower,
-                    });
-                }
-                break;
-        }
-        if(throwPower < 0) throwPower = 0;
-        if(throwPower > 1) throwPower = 1;
-    }
-    private void HandleGravity() {
+    private void Gravity() {
         if(useGravity == false) return;
 
+        float fallingSpeedMax = 50f * Time.deltaTime;
         float castDistance = 0.6f; // to change player height
         float playerHoverHeight_PercentsFromRayDistance = 0.8f;
 
@@ -198,11 +224,15 @@ public class Player : MonoBehaviour {
             }
         } else {
             airborneForTime += Time.deltaTime;
-            float fallingSpeed = 20 * Time.deltaTime;
-            transform.position += Vector3.down * fallingSpeed * airborneForTime * airborneForTime / 2;
+            float gravity = 20f;
+            float fallingSpeed = gravity * airborneForTime * airborneForTime / 2 * Time.deltaTime;
+            if(fallingSpeed > fallingSpeedMax) {
+                fallingSpeed = fallingSpeedMax;
+            }
+            transform.position += Vector3.down * fallingSpeed;
         }
     }
-    private void HadlePushindObjects() {
+    private void PushindObjects() {
         float castDistance = 1f;
         float pushingRadius = playerRadius * 1.1f;
         Vector3 capsuleTopposition = transform.position + Vector3.up * 0.2f;

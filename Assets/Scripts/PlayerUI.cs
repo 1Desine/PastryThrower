@@ -32,7 +32,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     private void Player_OnThrowPowerChanged(object sender, Player.OnThrowPowerChangedEventArgs e) {
-        UpdateThrowPower(e.throwPower);
+        UpdateThrowPower(e.throwPowerNormalized);
     }
 
     private void Player_OnScoreChanged(object sender, Player.OnScoreChangedEventArgs e) {
