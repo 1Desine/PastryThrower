@@ -46,13 +46,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""ThrowSpeed"",
-                    ""type"": ""Value"",
-                    ""id"": ""494fc69b-8654-448f-84c7-e6dd9791ce9e"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""4be3c91d-353c-473d-8eb8-8ed52c6e6f44"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""ThrowPastry"",
@@ -62,6 +62,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ThrowSpeed"",
+                    ""type"": ""Value"",
+                    ""id"": ""494fc69b-8654-448f-84c7-e6dd9791ce9e"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""SpawnPastry"",
@@ -82,17 +91,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d2fde6fb-fe9e-4207-8ce4-33fb50313e83"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ThrowPastry"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -172,6 +170,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5f3e1664-496f-40c8-b65b-429365bd0f78"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d2fde6fb-fe9e-4207-8ce4-33fb50313e83"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowPastry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -182,8 +202,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-        m_Player_ThrowSpeed = m_Player.FindAction("ThrowSpeed", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_ThrowPastry = m_Player.FindAction("ThrowPastry", throwIfNotFound: true);
+        m_Player_ThrowSpeed = m_Player.FindAction("ThrowSpeed", throwIfNotFound: true);
         m_Player_SpawnPastry = m_Player.FindAction("SpawnPastry", throwIfNotFound: true);
     }
 
@@ -248,8 +269,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_ThrowSpeed;
+    private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_ThrowPastry;
+    private readonly InputAction m_Player_ThrowSpeed;
     private readonly InputAction m_Player_SpawnPastry;
     public struct PlayerActions
     {
@@ -257,8 +279,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Move => m_Wrapper.m_Player_Move;
-        public InputAction @ThrowSpeed => m_Wrapper.m_Player_ThrowSpeed;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @ThrowPastry => m_Wrapper.m_Player_ThrowPastry;
+        public InputAction @ThrowSpeed => m_Wrapper.m_Player_ThrowSpeed;
         public InputAction @SpawnPastry => m_Wrapper.m_Player_SpawnPastry;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -275,12 +298,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @ThrowSpeed.started += instance.OnThrowSpeed;
-            @ThrowSpeed.performed += instance.OnThrowSpeed;
-            @ThrowSpeed.canceled += instance.OnThrowSpeed;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
             @ThrowPastry.started += instance.OnThrowPastry;
             @ThrowPastry.performed += instance.OnThrowPastry;
             @ThrowPastry.canceled += instance.OnThrowPastry;
+            @ThrowSpeed.started += instance.OnThrowSpeed;
+            @ThrowSpeed.performed += instance.OnThrowSpeed;
+            @ThrowSpeed.canceled += instance.OnThrowSpeed;
             @SpawnPastry.started += instance.OnSpawnPastry;
             @SpawnPastry.performed += instance.OnSpawnPastry;
             @SpawnPastry.canceled += instance.OnSpawnPastry;
@@ -294,12 +320,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @ThrowSpeed.started -= instance.OnThrowSpeed;
-            @ThrowSpeed.performed -= instance.OnThrowSpeed;
-            @ThrowSpeed.canceled -= instance.OnThrowSpeed;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
             @ThrowPastry.started -= instance.OnThrowPastry;
             @ThrowPastry.performed -= instance.OnThrowPastry;
             @ThrowPastry.canceled -= instance.OnThrowPastry;
+            @ThrowSpeed.started -= instance.OnThrowSpeed;
+            @ThrowSpeed.performed -= instance.OnThrowSpeed;
+            @ThrowSpeed.canceled -= instance.OnThrowSpeed;
             @SpawnPastry.started -= instance.OnSpawnPastry;
             @SpawnPastry.performed -= instance.OnSpawnPastry;
             @SpawnPastry.canceled -= instance.OnSpawnPastry;
@@ -324,8 +353,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         void OnLook(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
-        void OnThrowSpeed(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
         void OnThrowPastry(InputAction.CallbackContext context);
+        void OnThrowSpeed(InputAction.CallbackContext context);
         void OnSpawnPastry(InputAction.CallbackContext context);
     }
 }

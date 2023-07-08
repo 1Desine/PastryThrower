@@ -24,13 +24,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ThrowSpeed",
-                    "type": "Value",
-                    "id": "494fc69b-8654-448f-84c7-e6dd9791ce9e",
-                    "expectedControlType": "Vector2",
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "4be3c91d-353c-473d-8eb8-8ed52c6e6f44",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "ThrowPastry",
@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ThrowSpeed",
+                    "type": "Value",
+                    "id": "494fc69b-8654-448f-84c7-e6dd9791ce9e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "SpawnPastry",
@@ -60,17 +69,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d2fde6fb-fe9e-4207-8ce4-33fb50313e83",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ThrowPastry",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -150,6 +148,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "5f3e1664-496f-40c8-b65b-429365bd0f78",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d2fde6fb-fe9e-4207-8ce4-33fb50313e83",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThrowPastry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

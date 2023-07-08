@@ -11,6 +11,7 @@ public class GameInput : MonoBehaviour {
 
     public event EventHandler OnThrowPastry;
     public event EventHandler OnSpawnPastry;
+    public event EventHandler OnJump;
 
 
 
@@ -20,13 +21,18 @@ public class GameInput : MonoBehaviour {
 
         playerInputActions.Player.ThrowPastry.performed += ThrowPastry_performed;
         playerInputActions.Player.SpawnPastry.performed += SpawnPastry_performed;
+        playerInputActions.Player.Jump.performed += Jump_performed;
     }
+
 
     private void SpawnPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnSpawnPastry?.Invoke(this, EventArgs.Empty);
     }
     private void ThrowPastry_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         OnThrowPastry?.Invoke(this, EventArgs.Empty);
+    }
+    private void Jump_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnJump?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetLookDelta() {

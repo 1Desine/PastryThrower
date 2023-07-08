@@ -21,13 +21,20 @@ public class Pastry : MonoBehaviour {
         public float distance;
     }
 
+    private Rigidbody body;
+    private new Collider collider;
 
     private bool isBeingCarried;
     private Vector3 startPosition;
-    private bool hasHitAnyTarget;
+    private bool hitSomething;
 
 
     private void Awake() {
+        body = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<Collider>();
+        collider.enabled = false;
+
+        body.drag = 1f;
         isBeingCarried = true;
 
         SetColor();
@@ -48,18 +55,22 @@ public class Pastry : MonoBehaviour {
 
     public void SetBeingCarried_False() {
         isBeingCarried = false;
+        hitSomething = false;
+        collider.enabled = true;
     }
 
 
     private void OnTriggerEnter(Collider trigger) {
         Callback(trigger.gameObject);
+        hitSomething = true;
     }
     private void OnCollisionEnter(Collision collision) {
         Callback(collision.gameObject);
+        hitSomething = true;
     }
 
     private void Callback(GameObject interactGameObject) {
-        if(hasHitAnyTarget == false) {
+        if(hitSomething == false) {
             if(interactGameObject.TryGetComponent(out Target target)) {
                 float distance = (transform.position - startPosition).magnitude;
 
@@ -67,7 +78,7 @@ public class Pastry : MonoBehaviour {
                     targetType = target.GetTargetType(),
                     distance = distance,
                 });
-                hasHitAnyTarget = true;
+                hitSomething = true;
             }
         }
     }
