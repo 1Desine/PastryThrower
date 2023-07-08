@@ -37,7 +37,7 @@ public class Pastry : MonoBehaviour {
         collider = gameObject.GetComponent<Collider>();
         collider.enabled = false;
 
-        body.drag = 1f;
+        body.drag = 0.5f;
         isBeingCarried = true;
 
         SetColor();

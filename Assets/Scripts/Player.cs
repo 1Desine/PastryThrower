@@ -126,9 +126,11 @@ public class Player : MonoBehaviour {
 
     private void HandleThrowing() {
         bool throwButtonDown = gameInput.IsThrowButtonDown();
+        float throwForceModifier = 30f;
+
 
         if(throwingState == ThrowingState.Idle) {
-            if(throwButtonDown) {
+            if(throwButtonDown && ammo > 0) {
                 SpawnPastry();
                 throwingState = ThrowingState.AddingPower;
             }
@@ -140,7 +142,7 @@ public class Player : MonoBehaviour {
                 throwingState = ThrowingState.Idle;
                 float minThrowingPowerNormalized = 0.1f;
                 if(throwPowerNormalized > minThrowingPowerNormalized) {
-                    pastryHoldPoint.ThrowPastry(throwDirection);
+                    pastryHoldPoint.ThrowPastry(throwDirection * throwForceModifier);
                 }
                 throwPowerNormalized = 0;
             }
@@ -174,7 +176,10 @@ public class Player : MonoBehaviour {
         transform.eulerAngles += PlayerBodyRoationY * mouseSensitivity; // Rotate player
         playerHead.transform.eulerAngles += playerHeadRoationX * mouseSensitivity; // Rotate playerHead
 
-        throwDirection = playerHead.transform.forward * throwPowerNormalized + playerHead.transform.up * throwPowerNormalized;
+        float throwAngle = 20;
+        throwDirection = playerHead.transform.forward;
+        throwDirection = Quaternion.Euler(0, 0, throwAngle) * playerHead.transform.forward;
+        throwDirection *= throwPowerNormalized;
 
         Debug.DrawRay(playerHead.transform.position, throwDirection);
     }
