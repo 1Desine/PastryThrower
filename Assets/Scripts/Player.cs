@@ -30,6 +30,8 @@ public class Player : MonoBehaviour {
         public int ammo;
     }
 
+    public event EventHandler<HitTargetCallBackArgs> OnHitTarget;
+
 
     private Vector3 throwDirection;
     private float throwPowerNormalized;
@@ -126,7 +128,7 @@ public class Player : MonoBehaviour {
 
     private void HandleThrowing() {
         bool throwButtonDown = gameInput.IsThrowButtonDown();
-        float throwForceModifier = 30f;
+        float throwForceModifier = 20f;
 
 
         if(throwingState == ThrowingState.Idle) {
@@ -142,7 +144,7 @@ public class Player : MonoBehaviour {
                 throwingState = ThrowingState.Idle;
                 float minThrowingPowerNormalized = 0.1f;
                 if(throwPowerNormalized > minThrowingPowerNormalized) {
-                    pastryHoldPoint.ThrowPastry(throwDirection * throwForceModifier);
+                    pastryHoldPoint.ThrowPastry(throwDirection * throwPowerNormalized * throwForceModifier);
                 }
                 throwPowerNormalized = 0;
             }
@@ -173,13 +175,10 @@ public class Player : MonoBehaviour {
         Vector3 PlayerBodyRoationY = new Vector3(0, lookInput.x, 0);
         Vector3 playerHeadRoationX = new Vector3(lookInput.y, 0, 0);
 
-        transform.eulerAngles += PlayerBodyRoationY * mouseSensitivity; // Rotate player
-        playerHead.transform.eulerAngles += playerHeadRoationX * mouseSensitivity; // Rotate playerHead
-
-        float throwAngle = 20;
-        throwDirection = playerHead.transform.forward;
-        throwDirection = Quaternion.Euler(0, 0, throwAngle) * playerHead.transform.forward;
-        throwDirection *= throwPowerNormalized;
+        transform.eulerAngles += PlayerBodyRoationY * mouseSensitivity; // Rotate Player left/right
+        playerHead.transform.eulerAngles += playerHeadRoationX * mouseSensitivity; // Tilt playerHead up/down
+        
+        throwDirection = playerHead.transform.forward + playerHead.transform.up / 2; // I dont know how to rotate Vector3, so i tilt it down a bit
 
         Debug.DrawRay(playerHead.transform.position, throwDirection);
     }
@@ -272,6 +271,8 @@ public class Player : MonoBehaviour {
     }
 
     private void PastryHitTargetCallback(HitTargetCallBackArgs hitTargetCallBackArgs) {
+        OnHitTarget?.Invoke(this, hitTargetCallBackArgs);
+
         switch(hitTargetCallBackArgs.targetType) {
             default: Debug.LogError("hitTargetCallBackArgs.targetType = null"); break;
             case HitTargetCallBackArgs.TargetType.Static:

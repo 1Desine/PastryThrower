@@ -20,7 +20,6 @@ public class PastryHoldPoint : MonoBehaviour {
 
     public bool SpawnPastry(HitTargetCallBack callBack) {
         if(HasPastry()) {
-            Debug.Log("Tried spawn Pastry - pastry != null");
             return false;
         }
 
@@ -33,13 +32,11 @@ public class PastryHoldPoint : MonoBehaviour {
         Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
         pastryBody.useGravity = false;
 
-        Debug.Log("Pastry - pasrty Spawned");
         return true;
     }
 
     public void ThrowPastry(Vector3 direction) {
         if(!HasPastry()) {
-            Debug.Log("Tried throwind Pastry - no Pastry to throw");
             return;
         }
 
