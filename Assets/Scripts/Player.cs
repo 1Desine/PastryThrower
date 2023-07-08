@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
@@ -11,9 +12,6 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private GameInput gameInput;
     [SerializeField] private PastryHoldPoint pastryHoldPoint;
-    [SerializeField] private GameObject playerColliderObject;
-    private Collider playerCollider;
-    [SerializeField] private LayerMask gravityRaycastLayerMask;
 
     [SerializeField] private Transform playerHead;
 
@@ -37,7 +35,10 @@ public class Player : MonoBehaviour {
     private bool useGravity;
     private float airborneForTime;
 
+    private float playerRadius = 0.15f;
+
     private int playerScore;
+
 
 
 
@@ -45,7 +46,6 @@ public class Player : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        playerCollider = playerColliderObject.GetComponent<Collider>();
         useGravity = true;
 
         gameInput.OnThrowPastry += GameInput_OnThrowPastry;
@@ -75,7 +75,7 @@ public class Player : MonoBehaviour {
         HandleMovement();
         HandleThrowPower();
         HandleGravity();
-
+        HadlePushindObjects();
 
         Debug.DrawRay(playerHead.transform.position, playerHead.transform.forward, Color.green);
     }
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour {
     private void HandleLook() {
         Vector2 lookInput = gameInput.GetLookDelta();
         Vector3 PlayerBodyRoationY = new Vector3(0, lookInput.x, 0);
-        Vector3 playerHeadRoationX = new Vector3(lookInput.y, 0, 0); 
+        Vector3 playerHeadRoationX = new Vector3(lookInput.y, 0, 0);
 
         transform.eulerAngles += PlayerBodyRoationY * mouseSensitivity; // Rotate player
         playerHead.transform.eulerAngles += playerHeadRoationX * mouseSensitivity; // Rotate playerHead
@@ -97,21 +97,15 @@ public class Player : MonoBehaviour {
     }
     private void HandleMovement() {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-        Vector3 inputDir = new Vector3(inputVector.y, 0, inputVector.x);
-        Vector3 moveDir = transform.forward * inputDir.x + transform.right * inputDir.z;
+        Vector3 moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
         moveDir.y = 0; // NO down/up movement
         moveDir.Normalize();
 
         bool canMove = true;
         float playerSpeed = 2f;
-        float playerRadius = 0.1f;
         float moveDistance = playerSpeed * Time.deltaTime;
         if(Physics.CapsuleCast(transform.position, playerHead.transform.position, playerRadius, moveDir, out RaycastHit hit, moveDistance)) {
             canMove = false;
-            if(hit.collider.gameObject.TryGetComponent(out Rigidbody rb)) {
-                rb.AddForce(moveDir * Time.deltaTime);
-                canMove = true;
-            }
         }
 
         if(canMove) {
@@ -143,7 +137,6 @@ public class Player : MonoBehaviour {
         if(throwPower > 1) throwPower = 1;
     }
 
-
     private void PastryHitTargetCallback(HitTargetCallBackArgs hitTargetCallBackArgs) {
         switch(hitTargetCallBackArgs.targetType) {
             default: Debug.LogError("hitTargetCallBackArgs.targetType = null"); break;
@@ -167,15 +160,25 @@ public class Player : MonoBehaviour {
     private void HandleGravity() {
         if(useGravity == false) return;
 
-        float rayDistance = 0.6f; // change, to change player height
+        float castDistance = 0.6f; // to change player height
         float playerHoverHeight_PercentsFromRayDistance = 0.8f;
-        if(Physics.Raycast(transform.position, -Vector3.up, out RaycastHit raycastHit, rayDistance, gravityRaycastLayerMask)) {
-            if(raycastHit.distance < rayDistance * playerHoverHeight_PercentsFromRayDistance) {
+
+
+        Vector3 capsuleTopposition = transform.position + Vector3.up * 0.2f;
+        if(Physics.CapsuleCast(transform.position, capsuleTopposition, playerRadius, Vector3.down, out RaycastHit raycastHit, castDistance)) {
+            if(raycastHit.distance < castDistance * playerHoverHeight_PercentsFromRayDistance) {
+                // If Player is lower then should be
                 airborneForTime = 0;
-                transform.position = raycastHit.point + Vector3.up * rayDistance * playerHoverHeight_PercentsFromRayDistance;
+                if(raycastHit.transform.GetComponent<Rigidbody>() != null) {
+                    // If object has Rigidbody
+                } else {
+                    // If object does not have Rigidbody
+                    transform.position = transform.position + Vector3.down * raycastHit.distance + Vector3.up * castDistance * playerHoverHeight_PercentsFromRayDistance;
+                }
             } else {
+                // Magniting Player to hit
                 float magnitingSpeed = 30 * Time.deltaTime;
-                transform.position = Vector3.Slerp(transform.position, raycastHit.point + Vector3.up * rayDistance * playerHoverHeight_PercentsFromRayDistance, magnitingSpeed);
+                transform.position = Vector3.Slerp(transform.position, transform.position + Vector3.down * raycastHit.distance + Vector3.up * castDistance * playerHoverHeight_PercentsFromRayDistance, magnitingSpeed);
             }
         } else {
             airborneForTime += Time.deltaTime;
@@ -184,6 +187,38 @@ public class Player : MonoBehaviour {
         }
     }
 
+
+
+    private void HadlePushindObjects() {
+        float castDistance = 0.6f;
+        Vector3 capsuleTopposition = transform.position + Vector3.up * 0.2f;
+        RaycastHit[] raycastHits = Physics.CapsuleCastAll(transform.position, capsuleTopposition, playerRadius, Vector3.down, castDistance);
+        foreach(RaycastHit hit in raycastHits) {
+            if(hit.transform.TryGetComponent(out Rigidbody hitBody)) {
+                // If object has Rigidbody
+                Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+                Vector3 moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
+
+                Vector3 dirToHit = new Vector3(
+                        transform.position.x + hit.transform.position.x,
+                        0,
+                        transform.position.z + hit.transform.position.z
+                        );
+
+                float pushingForce = 30;
+                Vector3 pushingDrection;
+                if(moveDir != Vector3.zero) {
+                    pushingDrection = moveDir;
+                } else {
+                    pushingDrection = dirToHit;
+                }
+                Debug.DrawRay(transform.position + Vector3.down * castDistance, pushingDrection, Color.red, 1f);
+                pushingDrection.Normalize();
+                hitBody.AddForce(pushingDrection * pushingForce * Time.deltaTime, ForceMode.VelocityChange);
+            }
+
+        }
+    }
 
 
 }
