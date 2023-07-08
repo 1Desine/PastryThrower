@@ -12,9 +12,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private GameInput gameInput;
     [SerializeField] private PastryHoldPoint pastryHoldPoint;
-
     [SerializeField] private Transform playerHead;
-
     [SerializeField] private float mouseSensitivity = 0.1f;
 
     public event EventHandler<OnScoreChangedEventArgs> OnScoreChanged;
@@ -25,7 +23,10 @@ public class Player : MonoBehaviour {
     public class OnThrowPowerChangedEventArgs : EventArgs {
         public float throwPower;
     }
-
+    public event EventHandler<OnAmmoChangedEventArgs> OnAmmoChanged;
+    public class OnAmmoChangedEventArgs : EventArgs {
+        public int ammo;
+    }
 
 
     private Vector3 throwDirection;
@@ -40,27 +41,26 @@ public class Player : MonoBehaviour {
     private int playerScore;
 
 
+    private int ammo;
+    private int ammoMax = 10;
+    private float ammoCooldown;
+    private float ammoCooldownMax = 2f;
 
 
-    private void Start() {
+
+    private void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         useGravity = true;
 
-        gameInput.OnThrowPastry += GameInput_OnThrowPastry;
-        gameInput.OnSpawnPastry += GameInput_OnSpawnPastry;
-        gameInput.OnJump += GameInput_OnJump; ;
+        ammo = ammoMax;
     }
 
-    private void GameInput_OnSpawnPastry(object sender, EventArgs e) {
-        pastryHoldPoint.SpawnPastry(PastryHitTargetCallback);
-    }
-    private void GameInput_OnThrowPastry(object sender, EventArgs e) {
-        pastryHoldPoint.ThrowPastry(throwDirection);
-    }
-    private void GameInput_OnJump(object sender, EventArgs e) {
-        Jump();
+    private void Start() {
+        gameInput.OnThrowPastry += GameInput_OnThrowPastry;
+        gameInput.OnSpawnPastry += GameInput_OnSpawnPastry;
+        gameInput.OnJump += GameInput_OnJump;
     }
 
     private void LateUpdate() {
@@ -71,6 +71,9 @@ public class Player : MonoBehaviour {
         OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
             score = playerScore
         });
+        OnAmmoChanged?.Invoke(this, new OnAmmoChangedEventArgs {
+            ammo = ammo
+        });
     }
 
     private void Update() {
@@ -80,10 +83,38 @@ public class Player : MonoBehaviour {
         HandleGravity();
         HadlePushindObjects();
 
+        ammoCooldown -= Time.deltaTime;
+        if(ammoCooldown < 0) {
+            ammoCooldown = ammoCooldownMax;
+            if(ammo < ammoMax) {
+                ammo++;
+                OnAmmoChanged?.Invoke(this, new OnAmmoChangedEventArgs {
+                    ammo = ammo
+                });
+            }
+        }
+
         Debug.DrawRay(playerHead.transform.position, playerHead.transform.forward, Color.green);
     }
 
 
+
+    private void GameInput_OnSpawnPastry(object sender, EventArgs e) {
+        if(ammo <= 0) return;
+        if(pastryHoldPoint.SpawnPastry(PastryHitTargetCallback)) {
+
+            ammo--;
+            OnAmmoChanged?.Invoke(this, new OnAmmoChangedEventArgs {
+                ammo = ammo
+            });
+        }
+    }
+    private void GameInput_OnThrowPastry(object sender, EventArgs e) {
+        pastryHoldPoint.ThrowPastry(throwDirection);
+    }
+    private void GameInput_OnJump(object sender, EventArgs e) {
+        Jump();
+    }
 
 
     private void HandleLook() {
@@ -185,10 +216,10 @@ public class Player : MonoBehaviour {
                 Vector3 vectorToHitPosition = new Vector3(
                         hit.transform.position.x - transform.position.x,
                         0,
-                        hit.transform.position.z - transform.position.z 
+                        hit.transform.position.z - transform.position.z
                         );
 
-                float pushingForce = (1 - vectorToHitPosition.magnitude) * 30;
+                float pushingForce = 50 * Time.deltaTime;
                 Vector3 pushingDrection;
                 if(moveDir != Vector3.zero) {
                     pushingDrection = moveDir;
@@ -197,15 +228,13 @@ public class Player : MonoBehaviour {
                     pushingForce /= 1.5f;
                 }
                 pushingDrection.Normalize();
-                hitBody.AddForce(pushingDrection * pushingForce * Time.deltaTime, ForceMode.VelocityChange);
+                hitBody.AddForce(pushingDrection * pushingForce, ForceMode.VelocityChange);
 
                 Debug.DrawRay(transform.position + Vector3.down * castDistance, pushingDrection, Color.red, 1f);
             }
 
         }
     }
-
-
 
     private void PastryHitTargetCallback(HitTargetCallBackArgs hitTargetCallBackArgs) {
         switch(hitTargetCallBackArgs.targetType) {
@@ -223,6 +252,10 @@ public class Player : MonoBehaviour {
         OnScoreChanged?.Invoke(this, new OnScoreChangedEventArgs {
             score = playerScore
         });
+    }
+
+    public int GetAmmoMax() {
+        return ammoMax;
     }
 
 }

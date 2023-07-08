@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using static Pastry.HitTargetCallBackArgs;
 
@@ -28,6 +29,8 @@ public class Pastry : MonoBehaviour {
     private Vector3 startPosition;
     private bool hitSomething;
 
+    private float lifeTime = 10;
+
 
     private void Awake() {
         body = gameObject.GetComponent<Rigidbody>();
@@ -45,6 +48,11 @@ public class Pastry : MonoBehaviour {
         if(isBeingCarried) {
             startPosition = transform.position;
         }
+
+        if(isBeingCarried == false) {
+            lifeTime -= Time.deltaTime;
+            if(lifeTime < 0) Destroy(gameObject);
+        }
     }
 
 
@@ -53,7 +61,7 @@ public class Pastry : MonoBehaviour {
         return isBeingCarried;
     }
 
-    public void SetBeingCarried_False() {
+    public void SetIsBeingCarried_False() {
         isBeingCarried = false;
         hitSomething = false;
         collider.enabled = true;
@@ -88,9 +96,9 @@ public class Pastry : MonoBehaviour {
 
 
     private void SetColor() {
-        Material material =  Visual.GetComponent<MeshRenderer>().material;
+        Material material = Visual.GetComponent<MeshRenderer>().material;
 
-        Color color = new Color(Random.Range(0f, 1f),Random.Range(0f, 1f),Random.Range(0f, 1f), 1f);
+        Color color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
 
         material.color = color;
     }

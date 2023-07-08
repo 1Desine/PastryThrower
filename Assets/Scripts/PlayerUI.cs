@@ -5,19 +5,30 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
+    [SerializeField] private Player player;
+
 
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private Image throwPowerImage;
+    [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private TextMeshProUGUI ammoMaxText;
 
-    [SerializeField] private Player player;
 
 
 
     private void Start() {
         player.OnScoreChanged += Player_OnScoreChanged;
         player.OnThrowPowerChanged += Player_OnThrowPowerChanged;
+        player.OnAmmoChanged += Player_OnAmmoChanged;
+        SetAmmoMax();
+    }
 
+    private void Player_OnAmmoChanged(object sender, Player.OnAmmoChangedEventArgs e) {
+        ammoText.text = e.ammo.ToString();
+    }
+    private void SetAmmoMax() {
+        ammoMaxText.text = player.GetAmmoMax().ToString();
     }
 
     private void Player_OnThrowPowerChanged(object sender, Player.OnThrowPowerChangedEventArgs e) {

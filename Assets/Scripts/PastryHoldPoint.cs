@@ -18,10 +18,10 @@ public class PastryHoldPoint : MonoBehaviour {
         KeepPastryInfront();
     }
 
-    public void SpawnPastry(HitTargetCallBack callBack) {
+    public bool SpawnPastry(HitTargetCallBack callBack) {
         if(HasPastry()) {
             Debug.Log("Tried spawn Pastry - pastry != null");
-            return;
+            return false;
         }
 
         Pastry randomPastry = throwableObjectsSOList.GetRandomPastry();
@@ -34,6 +34,7 @@ public class PastryHoldPoint : MonoBehaviour {
         pastryBody.useGravity = false;
 
         Debug.Log("Pastry - pasrty Spawned");
+        return true;
     }
 
     public void ThrowPastry(Vector3 direction) {
@@ -45,7 +46,7 @@ public class PastryHoldPoint : MonoBehaviour {
         Rigidbody pastryBody = pastry.GetComponent<Rigidbody>();
         pastryBody.useGravity = true;
 
-        pastry.SetBeingCarried_False();
+        pastry.SetIsBeingCarried_False();
 
         float forceModifier = 10;
         pastryBody.AddForce(direction * forceModifier, ForceMode.Impulse);
